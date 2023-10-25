@@ -26,78 +26,43 @@ class Solution {
     풀이 2. Deque 인터페이스 -> ArrayDeque 사용
     ArrayDeque는 큐와 스택으로 사용할 때 각각 Queue와 Stack보다 빠르며
     자바에서 Stack은 Synchronized되어 느리기에 보통의 경우 Stack은 ArrayDeque클래스를 사용한다.
+    Deque의 특징은 양쪽으로 element를 빼낼 수 있다는 것이 특징이기에 이를 활용해 풀이를 한다.
+    양쪽을 빼내서 서로 비교하는 것
+    size가 홀수라면 -> 양 옆을 size/2-1 번 만큼 반복
+    size가 짝수라면 -> size/2-1번 만큼 반복
 
     push() -> offerLast()
     pop() -> pollLast()
     peek() -> peekLast()
+
+    풀이3. 
     */
     public boolean isPalindrome(ListNode head) {
         int size = 0; // LinkedList 요소의 개수
         ListNode tmp = head;
         Deque<Integer> stack = new ArrayDeque<>();
-        int stackVar = 0;
         boolean isPalin = true;
         
+        // 미리 deque에 적재해 놓고 빼서 사용하는 것
         while(tmp != null){
             size++;
+            stack.offerLast(tmp.val);
             tmp = tmp.next;
         }
+        // 반복할 count
+        int count = size/2 -1;
 
-        tmp = head;
+        //count가 0이 될때까지 반복
+        while(count >= 0){
+            //deque에서 마지막 element와 첫번째 element가 같지 않다면 false and break
+            if(stack.pollFirst() != stack.pollLast()){
+                isPalin = false;
+                break;
+            }
+            count--;
+        }
         
-        //edge case
-        //1인건 무조건 true
-        if(size == 1){
-            return true;
-        }
-        //2일때는 2개의 element를 본다.
-        if(size == 2){
-            if(tmp.val == tmp.next.val){
-                return true;
-            }
-            else
-                return false;
-        }
-
-        int mid = size/2; //중앙 index
-        tmp = head; //다시 초기화
-        //홀수 일때
-        if(size%2 == 1){
-            // stack에 요소 넣기
-            for(int i =0; i<mid; i++){
-                stack.offerLast(tmp.val);
-                tmp = tmp.next; //포인터 이동
-            }
-
-            tmp = tmp.next; // 포인터 size/2+1로 이동
-            // stack의 요소와 LinkedList value 비교
-            // 포인터는 이미 size/2+1에 와 있다.
-            for(int i = mid+1; i<size; i++){
-                stackVar = stack.pollLast();
-                if(stackVar != tmp.val){
-                    isPalin = false; // 비교 결과가 같지 않으면 false인 것
-                    break;
-                }
-                tmp = tmp.next;
-            }
-        }
-        //짝수 일 때
-        if(size%2 == 0){
-            //stack에 요소 넣기
-            for(int i=0; i<mid; i++){
-                stack.offerLast(tmp.val);
-                tmp = tmp.next;
-            }
-            for(int i = mid; i<size; i++){
-                stackVar = stack.pollLast();
-                if(stackVar != tmp.val){
-                    isPalin = false;
-                    break;
-                }
-                tmp = tmp.next;
-            }
-        }
-
+    
         return isPalin;
     }
 }
