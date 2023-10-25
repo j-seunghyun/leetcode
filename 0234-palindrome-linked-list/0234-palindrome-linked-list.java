@@ -35,34 +35,71 @@ class Solution {
     pop() -> pollLast()
     peek() -> peekLast()
 
-    풀이3. 
+    풀이3. 러너기법 사용
+    빠른 러너 -> 2칸씩 이동
+    느린 러너 -> 1칸씩 이동
+
+    Node의 Element수가 홀수였다면 빠른 러너가 끝에 도달했을 떄, 느린 러너는 딱 중간에 위치
+    Node의 Element수가 짝수였다면 중간의 2개의 index중 2번쨰 index에 느린 러너가 도달하게 된다.
+
+    짝수였다면 현재 느린러너 위치부터 마지막까지 느린 러너가 움직이는 곳이 rev가 된다.
+    홀수였다면 현재 느린러너 위치.next 부터 마지막까지 느린러너가 움직이는 곳이 rev가 된다.
+    
+    rev 연결리스트를 생성한 다음 head로 처음부터 시작해
+    rev 연결리스트의 각 노드의 val와 head 연결리스트의 각 노드의 val을 비교하면 된다.
+
     */
     public boolean isPalindrome(ListNode head) {
-        int size = 0; // LinkedList 요소의 개수
-        ListNode tmp = head;
-        Deque<Integer> stack = new ArrayDeque<>();
-        boolean isPalin = true;
-        
-        // 미리 deque에 적재해 놓고 빼서 사용하는 것
-        while(tmp != null){
-            size++;
-            stack.offerLast(tmp.val);
-            tmp = tmp.next;
-        }
-        // 반복할 count
-        int count = size/2 -1;
 
-        //count가 0이 될때까지 반복
-        while(count >= 0){
-            //deque에서 마지막 element와 첫번째 element가 같지 않다면 false and break
-            if(stack.pollFirst() != stack.pollLast()){
-                isPalin = false;
-                break;
-            }
-            count--;
-        }
+        ListNode fast = head; ListNode slow = head;
         
-    
-        return isPalin;
+        // 1. 빠른 러너가 끝에 도달할때까지 반복
+        // 홀수개 였다면 빠른러너는 2칸씩 매번 이동가능하고, 마지막에 도달하면 fast.next가 null이 된다.
+        // 짝수개 였다면, 빠른 러너는 마지막 에서 두번째 element에서 끝난다. 
+        // 1 2 3 4
+        // x   x   x
+        //     o
+        // 1 2 3 4 5
+        // x   x   x x
+        //     o o
+        while(fast != null && fast.next != null){
+            // fast는 2칸씩, slow는 1칸씩 이동
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+
+        // rev 연산을 같이 하기 위해서 일부러 홀수의 경우 한번 더 움직여준다.
+        if(fast != null){
+            //slow를 한번 더 움직여 주어야 한다.
+            slow = slow.next;
+        }
+
+        //2. rev 연결리스트 생성
+        // 연결리스트에 Node를 추가할때는 맨 앞에 (addFirst한다는 것을 잊지 말자)
+        // 짝수개 였으면 현재 느린러너 위치부터 마지막까지 느린 러너가 움직이는 곳이 rev가 된다.
+        ListNode rev = null;
+
+        while(slow != null){
+            ListNode tmp = slow.next; //지금의 slow.next를 tmp에 저장해 두고 ** (그래야 포인터 움직일 수 있다.)
+            slow.next = rev;
+            rev = slow;
+            slow = tmp;
+        }
+
+        // 연결리스트의 addFirst를 사용했기에 역순으로 들어가게 된다.
+        // 4 5를 집어넣으면 -> 5 4 순으로 들어가있다.
+        // 고로, 2개의 list가 서로가 같아야지 palindrome이라고 할 수 잇음
+
+        while(rev != null){
+            if(head.val != rev.val){
+                return false;
+            }
+            head = head.next;
+            rev = rev.next;
+        }
+
+
+
+        return true;
     }
 }
