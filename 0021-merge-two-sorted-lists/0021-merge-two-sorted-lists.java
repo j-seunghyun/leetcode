@@ -19,93 +19,22 @@ class Solution {
     매 iteration마다 curA.val과 curB.val을 계산해 더 작거나 같은 것을 삽입
     curA와 curB모두 다 순회되어서 null일때까지 반복 (즉 curA != null && curB != null)
     
+    풀이2. 재귀 사용
+    merge Sort의 마지막 조합과 동일하게 (첫 번째 부터 비교하면서 리턴하면 쉽게 풀 수 있다.)
+
      */
     public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
         
-        ListNode answer = null;
-        ListNode tail = answer;
+        if(list1 == null) return list2;
+        if(list2 == null) return list1;
 
-        while(!(list1 == null && list2 == null)){
-
-            //list1은 순회가 끝났으면 -> list2요소만 삽입(addLast해야 한다.)
-            if(list1 == null){
-                
-                //answer의 head를 위해
-                if(answer == null){
-                    ListNode next = list2.next;
-                    list2.next = null;
-                    answer = list2;
-                    list2 = next;
-                    tail = answer;
-                }
-                //tail만 신경써주면 된다.
-                else{
-                    ListNode next = list2.next;
-                    list2.next = null;  
-                    tail.next = list2;
-                    tail = tail.next;
-                    list2 = next;
-                }
-            }
-            //list2는 순회가 끝났으면 -> list1요소만 삽입
-            else if(list2 == null){
-                if(answer == null){
-                    ListNode next = list1.next;
-                    list1.next = null;
-                    answer = list1;
-                    list1 = next;
-                    tail = answer;
-                }else{
-                    ListNode next = list1.next;
-                    list1.next = null;
-                    tail.next = list1;
-                    tail = tail.next;
-                    list1 = next;
-                }
-            }
-            //둘다 순회가 아직 안끝났으면 -> 대소 비교해서 삽입
-            else{
-                //list1이 작거나 같다면 list1의 value삽입
-                if(list1.val <= list2.val){
-
-                    //마찬가지로 answer이 null인 경우를 고려한다.
-                    if(answer == null){
-                        ListNode next = list1.next;
-                        list1.next = null;
-                        answer = list1;
-                        list1 = next;
-                        tail = answer;
-                    }else{
-                        ListNode next = list1.next;
-                        list1.next = null;
-                        tail.next = list1;
-                        tail = tail.next;
-                        list1 = next;
-                    }
-                }
-                // list2가 더 작을때 list2의 value삽입
-                else{
-
-                    if(answer == null){
-                        ListNode next = list2.next;
-                        list2.next = null;
-                        answer = list2;
-                        list2 = next;
-                        tail = answer;
-                    }
-                    else{
-                        ListNode next = list2.next;
-                        list2.next = null;
-                        tail.next = list2;
-                        tail = tail.next;
-                        list2 = next;
-                    }
-                }
-
-            }
-
+        // list1의 val이 list2의 val보다 작다면 현재 iter에서 list1이 선택되어야 한다. 
+        if(list1.val < list2.val){
+            list1.next = mergeTwoLists(list1.next, list2);
+            return list1;
+        }else{
+            list2.next = mergeTwoLists(list1, list2.next);
+            return list2;
         }
-
-        return answer;
     }
 }
